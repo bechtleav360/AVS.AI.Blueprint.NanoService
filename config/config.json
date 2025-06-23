@@ -1,0 +1,8 @@
+{
+    "name": "Python REST-API Template",
+    "api_port": 5000,
+    "url_prefix": "",
+    "log_level": "DEBUG",
+    "log_file": "template.log",
+    "script_path": "src.app"
+}

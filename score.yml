@@ -1,0 +1,25 @@
+apiVersion: score.dev/v1b1
+
+metadata:
+  name: app #TODO CHANGE NAME
+
+# Define the ports that this service exposes
+service:
+  ports:
+    www:
+      port: 5000 # The port that the service will be exposed on
+      targetPort: 5000 # The port that the container will be listening on
+
+resources:
+  dns:
+    type: dns
+  route:
+    type: route
+    params:
+      host: ${resources.dns.host}
+      path: /
+      port: 5000
+
+containers:
+  app:
+    image: IMAGE
