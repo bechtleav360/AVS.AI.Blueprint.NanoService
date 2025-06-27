@@ -7,6 +7,6 @@ This package contains all external service clients and API integrations.
 # Example:
 # from .external_api_client import ExternalAPIClient
 
-__all__ = [
+__all__: list[str] = [
     # Add client names here as they are added
 ]

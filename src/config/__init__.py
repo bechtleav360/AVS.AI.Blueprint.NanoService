@@ -5,9 +5,9 @@ variables, settings, and logging configuration.
 """
 
 from .config import ConfigurationManager
-from . import logs
+from .params import ConfigParameter
 
-__all__ = [
-    'ConfigurationManager',
-    'logs',
+__all__: list[str] = [
+    "ConfigurationManager",
+    "ConfigParameter",
 ]

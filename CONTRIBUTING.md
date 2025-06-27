@@ -50,10 +50,48 @@ We use the following linters:
 ### Prerequisites
 
 - Python 3.12+
-- Poetry (for dependency management)
+- [uv](https://github.com/astral-sh/uv) (recommended) or pip (Python package manager)
 - pre-commit (for git hooks)
+- Docker and Docker Compose (for containerized development)
 
-### Setup Instructions
+### Development with Docker
+
+For a consistent development environment, you can use Docker:
+
+1. **Build the development container**:
+   ```bash
+   docker build -t your-service-name .
+   ```
+
+2. **Run the service in development mode**:
+   ```bash
+   docker run -it --rm \
+     -p 8000:8000 \
+     -v ${PWD}:/app \
+     -e PYTHONPATH=/app \
+     your-service-name
+   ```
+
+3. **Access the service**:
+   - API Documentation: http://localhost:8000/docs
+   - Alternative Documentation: http://localhost:8000/redoc
+
+4. **For development with auto-reload**:
+   ```bash
+   docker run -it --rm \
+     -p 8000:8000 \
+     -v ${PWD}:/app \
+     -e PYTHONPATH=/app \
+     -e ENVIRONMENT=development \
+     avs-ai-nanoservice-dev \
+     uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+   ```
+
+### Local Development Setup
+
+#### Prerequisites
+
+Ensure you have the prerequisites installed, then follow these setup instructions:
 
 1. Clone the repository:
    ```bash
@@ -62,8 +100,32 @@ We use the following linters:
    ```
 
 2. Set up the virtual environment and install dependencies:
+   
+   Using uv (recommended):
    ```bash
-   poetry install
+   # Create and activate virtual environment
+   python -m venv .venv
+   .\.venv\Scripts\activate  # On Windows
+   # or
+   # source .venv/bin/activate  # On Unix/macOS
+   
+   # Install UV
+   pip install uv
+
+   # Install dependencies
+   uv pip install -r requirements.txt
+   ```
+   
+   Or using pip:
+   ```bash
+   # Create and activate virtual environment
+   python -m venv .venv
+   .\.venv\Scripts\activate  # On Windows
+   # or
+   # source .venv/bin/activate  # On Unix/macOS
+   
+   # Install dependencies
+   pip install -r requirements.txt
    ```
 
 3. Install pre-commit hooks:
@@ -71,9 +133,17 @@ We use the following linters:
    pre-commit install
    ```
 
-4. Configure environment variables:
+4. Install development dependencies (if any):
    ```bash
-   cp .env.example .env
+   # If you have a requirements-dev.txt
+   uv pip install -r requirements-dev.txt  # or use pip
+   ```
+
+5. Configure environment variables:
+   ```bash
+   copy .env.example .env  # On Windows
+   # or
+   # cp .env.example .env  # On Unix/macOS
    # Edit .env with your configuration
    ```
 

@@ -4,16 +4,15 @@ from fastapi import FastAPI
 from fastapi.routing import APIRoute, Mount
 from starlette.responses import HTMLResponse
 
-from src.api.base_controller import BaseController
 from src.config.config import ConfigurationManager
-
-SETTINGS = ConfigurationManager()
+from src.controller.base_controller import BaseController
 
 
 class StartController(BaseController):
-    def __init__(self):
+
+    def __init__(self, settings: ConfigurationManager):
+        super().__init__(settings)
         self.logger = logging.getLogger("api.start")
-        self.app = None
 
     async def show_welcome(self) -> HTMLResponse:
         """
@@ -27,7 +26,9 @@ class StartController(BaseController):
             if isinstance(route, APIRoute):
                 methods = [method for method in route.methods]
                 summary = f" - {route.summary}" if route.summary else ""
-                routes.append(f"{route.name or 'unnamed'}: {', '.join(methods)} {route.path}{summary}")
+                routes.append(
+                    f"{route.name or 'unnamed'}: {', '.join(methods)} {route.path}{summary}"
+                )
             elif isinstance(route, Mount):
                 routes.append(f"MOUNT: {route.path} → {route.name}")
             else:
@@ -37,20 +38,45 @@ class StartController(BaseController):
         # Sort routes for better readability
         routes.sort()
 
+        # Get app info from settings
+        app_name = self.settings.get_config("app_name", "FastAPI Application")
+        app_description = self.settings.get_config("app_description", "")
+        app_version = self.settings.get_config("app_version", "0.1.0")
+
         html_content = f"""
             <html>
+                <head>
+                    <title>{app_name} v{app_version}</title>
+                    <style>
+                        body {{ font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }}
+                        .header {{ margin-bottom: 30px; }}
+                        .description {{ color: #666; margin: 10px 0 20px 0; }}
+                        .routes {{ background: #f5f5f5; padding: 15px; border-radius: 5px; }}
+                        pre {{ margin: 0; white-space: pre-wrap; }}
+                    </style>
+                </head>
                 <body>
-                    <h1>Python Fast API Template</h1>
-                    <h2>Available routes:</h2>
-                    <pre>{chr(10).join(routes)}</pre>
+                    <div class="header">
+                        <h1>{app_name} <small>v{app_version}</small></h1>
+                        {f'<div class="description">{app_description}</div>' if app_description else ''}
+                    </div>
+                    <h2>Available Routes</h2>
+                    <div class="routes">
+                        <pre>{chr(10).join(routes)}</pre>
+                    </div>
                 </body>
             </html>
         """
 
         return HTMLResponse(content=html_content)
 
-    def register_routes(self, app: FastAPI, url_prefix: str = ""):
-        """Register the welcome page route"""
+    def register_routes(self, app: FastAPI, url_prefix: str = "") -> None:
+        """Register the welcome page route
+
+        Args:
+            app: The FastAPI application instance
+            url_prefix: URL prefix for the routes
+        """
         self.app = app
 
         app.add_api_route(
@@ -60,5 +86,5 @@ class StartController(BaseController):
             response_class=HTMLResponse,
             summary="Welcome Page",
             description="Shows a simple welcome screen explaining what this service does",
-            tags=["info"]
+            tags=["info"],
         )
