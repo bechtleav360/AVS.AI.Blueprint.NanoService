@@ -8,6 +8,10 @@ This document defines how documentation should be maintained in a FastAPI micros
 
 ## 1. Code-Level Documentation
 
+### Type Hints
+- Type Hints are required 
+- The types should be specific
+
 ### Docstrings
 
 - All public functions, classes, and methods must have docstrings.

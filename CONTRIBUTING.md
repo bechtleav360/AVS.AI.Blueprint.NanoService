@@ -27,6 +27,7 @@ We follow [PEP 8](https://www.python.org/dev/peps/pep-0008/) for Python code sty
   1. Standard library imports
   2. Third-party imports
   3. Local application imports
+- **Type Hints**: All new functions, methods, and class attributes must use type hints. Add typing for variable definitions as well
 
 ### Formatting
 
@@ -271,6 +272,7 @@ pytest tests/path/to/test_file.py::test_function_name
 - Ensure proper error handling
 - Check for security vulnerabilities
 - Verify documentation is up to date
+- For high-impact or sensitive PRs, local checks should be done as well. E.g. Manually test basic functionalities and some edge cases, use a debugger to check, if type hints are correct.
 
 ## Documentation
 
