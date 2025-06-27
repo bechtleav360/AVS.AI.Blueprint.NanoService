@@ -1,0 +1,17 @@
+{
+    "recommendations": [
+        // Core Python
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        // Code formatting
+        "ms-python.black-formatter",
+        "ms-python.isort",
+        // Linting and type checking
+        "ms-python.mypy-type-checker",
+        "ms-python.flake8",
+        // Code quality
+        "visualstudioexptteam.vscodeintellicode",
+        "usernamehw.errorlens",
+        "njpwerner.autodocstring"
+    ]
+}

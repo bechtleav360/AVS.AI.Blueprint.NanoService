@@ -1,23 +1,39 @@
-"""An Example on how a Service could look like.
-In this case we are trying to create an echoing service that simply return back the input."""
+"""Echo service implementation.
 
-from datetime import datetime
+This service handles the business logic for echoing messages.
+"""
 
-from src.common.model.dto.echo import EchoInput, EchoOutput
+from datetime import datetime, timezone
+from typing import Any, Dict
+
+from src.models.domain import EchoMessage
 
 
 class EchoService:
-    """An example service that simply echoes back the input"""
+    """Service that processes echo requests.
 
-    def __init__(self) -> None:
-        self.creation_timestamp = datetime.utcnow().isoformat()
+    This service is responsible for handling the business logic
+    related to echoing messages.
+    """
 
-    def process_input(self, echo_input: EchoInput) -> EchoOutput:
-        """Echoes back the input"""
+    def __init__(self):
+        """Initialize the echo service with a creation timestamp."""
+        self.creation_time = datetime.now(timezone.utc)
 
-        return EchoOutput(
-            input_data=echo_input.dict(),  # Echo back all input data
-            processed_timestamp=datetime.utcnow().isoformat(),
-            up_timestamp=self.creation_timestamp,
-            processing_info={"message": "Echo successful"}
+    def process_input(self, input_data: Dict[str, Any]) -> EchoMessage:
+        """Process the input data and return an echo message.
+
+        Args:
+            input_data: The input data to echo back
+
+        Returns:
+            EchoMessage: The processed echo message
+        """
+        # In a real service, this would contain actual business logic
+        return EchoMessage(
+            data=input_data,
+            processed_timestamp=datetime.now(timezone.utc),
+            service_start_time=self.creation_time,
+            metadata={"source": "echo_service"},
+            is_processed=True,
         )
