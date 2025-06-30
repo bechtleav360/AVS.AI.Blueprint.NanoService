@@ -1,66 +1,226 @@
-# Python REST-API Template
+# AVS.AI.Blueprint.NanoService
 
-## Introduction 
-This is a template project for python services that aims to provide a REST-API.  
-By default, it exposes an endpoint `/echo`, which accepts any valid json object and simply echos it back as the result.
+## Introduction
 
-## Controller
-Controllers are used to create the endpoints of this service, mostly, but not necessarily, REST-Endpoints.  
-Each Controller is a class and each Endpoint is an async method of that class. Controller classes should always have
-"Controller" in their respective names, like "EchoController".  
-This template contains three Controllers by default:
+This project is a blueprint for building Python microservices using FastAPI, following a clean layered architecture. It provides a standardized structure for developing maintainable, scalable, and testable REST APIs.
 
-1. **Actuator:** The ActuatorController adds simple actuators to the API, including metrics using prometheus.
-2. **Start:** The StartController adds a simple HTML start page on the default route `/`.
-3. **Echo:** A simple Controller, echoing back the input.
+By default, it exposes an endpoint `/echo` which accepts any valid JSON object and echoes it back as the result, demonstrating the basic flow through the application layers.
 
-All controllers should be added in separate python files located in "#projectROOT/src/api". The python files should end
-with "_controller".
+## Architecture Overview
 
-### BaseController
-This template comes with a BaseController class, that forces the implementation of a "register_routes" method.  
-All controllers that inherit from BaseController will automatically be added to the app.
+The application follows a strict layered architecture with clear separation of concerns:
 
-## Services
-A Service in this context is the connection between the controllers and the actual logic or content provided by this
-API. They provide a "process_input" method, that takes the InputModel of the corresponding Controller and creates
-an OutputModel, that is returned by the Controller. Controllers should never make changes after the Output has been
-created. All manipulation or processing of the input has to take place within the service classes.  
-Service classes always have "Service" in their respective names, like "EchoService".  
-This template contains one example Service:
+```
+┌─────────────────┐
+│   Controllers   │  ← API endpoints, request/response handling
+├─────────────────┤
+│    Services     │  ← Business logic and orchestration
+├─────────────────┤
+│  Repositories   │  ← Data access and persistence
+├─────────────────┤
+│     Models      │  ← Domain models and data structures
+├─────────────────┤
+│     Clients     │  ← External service integrations
+├─────────────────┤
+│     Config      │  ← Application configuration
+└─────────────────┘
+```
 
-1. **Echo:** Directly parses the InputModel into the OutputModel, without any additional logic or processing.
+### Key Architectural Principles
 
-## Processing/Content
-Depending on this REST-API's purpose, any Logic that processes or collects content should happen in separate classes.  
-If, for instance, this REST-API is supposed to provide data from a database (or any other datasource), a class should be
-created, that handles the data retrieval/creation/...  
-Those classes should then be used by Service classes to create the connections to the REST-API.
+- **Separation of Concerns**: Each layer has a specific responsibility
+- **Dependency Flow**: Dependencies flow downward (controllers → services → repositories)
+- **Async by Design**: All I/O operations use `async/await` for non-blocking execution
+- **Environment-Driven Configuration**: All configuration is externalized
+- **Clean API Boundaries**: DTOs are used at API boundaries, separate from domain models
 
-## Models
-This API uses pydantic models to represent simple data classes. All pydantic model classes should be added in the
-"#projectROOT/src/common/model" folder.
+## Project Structure
 
-### DataTransferObjects (DTOs)
-DataTransferObjects are used to parse in- and output to and from the REST-API. A Controller specifies which input to
-accept and what the output should look like. Using FastAPI, the input is automatically parsed and validated.  
-DTOs should be added to "#projectROOT/src/common/model/dto". A separate python file should be used for each controller,
-that uses a DTO.
+```
+src/
+├── config/       # Application configuration
+├── models/       # Domain models and data structures
+├── repositories/ # Data access layer
+├── services/     # Business logic
+├── clients/      # External service integrations
+└── controller/   # API endpoints
+```
+
+## Layers
+
+### Controllers
+
+Controllers handle HTTP requests and responses, defining the API endpoints of the service.
+
+- API route definitions
+- Request validation
+- Response formatting
+- Error handling (HTTP-specific)
+
+Example controllers:
+- **ActuatorController**: Provides health checks and metrics
+- **StartController**: Renders the landing page
+- **EchoController**: Demonstrates basic request/response flow
+
+### Services
+
+Services contain the core business logic of the application.
+
+- Business rules implementation
+- Orchestration between repositories and clients
+- Domain-specific validation
+- Transaction management
+
+### Models
+
+Models define the data structures used throughout the application.
+
+- Pydantic models for validation
+- Domain entities
+- Data Transfer Objects (DTOs)
+- Type definitions
+
+### Repositories
+
+Repositories handle data access and persistence.
+
+- Database operations
+- Query building
+- Data mapping
+- Transaction handling
+
+### Clients
+
+Clients integrate with external services and APIs.
+
+- HTTP clients
+- Message queue clients
+- Third-party service integrations
+- Authentication clients
+
+### Configuration
+
+The configuration layer manages application settings.
+
+- Environment variable handling
+- Configuration validation
+- Feature flags
+- Logging configuration
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3.12+
+- [uv](https://github.com/astral-sh/uv) (recommended) or pip
+- Docker and Docker Compose (optional)
+
+### Local Development Setup
+
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd AVS.AI.Blueprint.NanoService
+   ```
+
+2. Set up the virtual environment and install dependencies:
+   ```bash
+   # Create and activate virtual environment
+   python -m venv .venv
+   .\.venv\Scripts\activate  # On Windows
+   # or
+   # source .venv/bin/activate  # On Unix/macOS
+   
+   # Install dependencies
+   uv pip install -r requirements.txt  # or use pip
+   ```
+
+3. Configure environment variables:
+   see below
+
+4. Run the application:
+   ```bash
+   python -m src.app
+   ```
+
+5. Access the application:
+   - API Documentation: http://localhost:8000/docs
+   - Alternative Documentation: http://localhost:8000/redoc
+   - Landing Page: http://localhost:8000/
+
+### Docker Development
+
+For containerized development:
+
+```bash
+# Build the image
+docker build -t avs-ai-nanoservice .
+
+# Run the container
+docker run -it --rm -p 8000:8000 -v ${PWD}:/app avs-ai-nanoservice
+
+# For development with auto-reload
+docker run -it --rm -p 8000:8000 -v ${PWD}:/app -e ENVIRONMENT=development avs-ai-nanoservice uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+```
 
 ## Configuration
-The template also provides a default configuration class called "ConfigurationManager". The basis for this class is 
-the dynaconf framework, which allows access of configuration variables via both a config.py file (located in the 
-folder #projectROOT/config) and environment variables.
+
+The service uses a layered configuration approach based on the dynaconf framework:
+
+### Configuration Hierarchy
+
+1. **Base Configuration**: Global and service-specific configurations are defined in JSON files located in the `config/` directory.
+
+2. **Environment Variables**: Any configuration can be overridden using environment variables, which takes precedence over JSON files. This is particularly useful for:
+   - Deployment-specific settings in Helm charts
+   - Container configurations in Docker Compose files
+   - Local development environment customization
 
 ### Usage
-To use the ConfigurationManager, simply import the class and instantiate it, e.g.:
-```python 
-from src.config.config import ConfigurationManager
 
-SETTINGS = ConfigurationManager()
+Access configuration through the `ConfigurationManager`:
+
+```python
+from src.config import ConfigurationManager
+
+settings = ConfigurationManager()
+db_url = settings.get_config("database_url")
 ```
-To reference any configuration variable use the "get_config" method.
 
-## Logs
-The Service implements basic logging, including logging to a .log file. The last 300 lines can be returned via the
-actuator endpoint `/logs`
+### Adding New Configuration
+
+1. Add default values to the JSON file `config/config.json`
+2. For environment variable overrides, use the format:
+   ```
+   DYNACONF_SETTING_NAME=value
+   ```
+
+## API Documentation
+
+FastAPI automatically generates interactive API documentation:
+
+- Swagger UI: `/docs`
+- ReDoc: `/redoc`
+
+## Logging
+
+The service implements structured logging with the following features:
+
+- Request ID tracking for correlation
+- Log levels configurable via environment variables
+- Log rotation for production environments
+- Actuator endpoint `/logs` returns the last 300 log lines
+
+## Contributing
+
+Please see [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines on:
+
+- Code style and formatting
+- Development setup
+- Testing requirements
+- Pull request process
+- Documentation standards
+
+## License
+
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
