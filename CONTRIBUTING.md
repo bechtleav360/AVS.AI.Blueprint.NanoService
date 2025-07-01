@@ -295,6 +295,66 @@ To view the API docs:
 
 2. Visit `http://localhost:8000/docs` for interactive API documentation.
 
+### Route Documentation Guidelines
+
+When registering routes, always follow these guidelines to ensure proper API documentation and MCP compatibility:
+
+#### Operation IDs
+
+Always provide an operation ID when registering routes:
+
+```python
+@router.get("/example", operation_id="get_example")
+def get_example():
+    ...
+```
+
+Or when using the `app.include_router` method:
+
+```python
+app.include_router(
+    router,
+    prefix="/api",
+    tags=["example"],
+    responses={404: {"description": "Not found"}},
+)
+```
+
+Operation IDs should:
+- Be unique across the entire API
+- Use camelCase or snake_case consistently
+- Be descriptive of the operation
+- Follow the pattern `<verb>_<resource>_<action>` (e.g., `get_user_profile`, `create_order`)
+
+#### Route Descriptions
+
+Always provide detailed descriptions for your routes using docstrings:
+
+```python
+@router.get("/users/{user_id}", operation_id="get_user_by_id")
+async def get_user(user_id: int):
+    """Retrieve a user by their ID.
+    
+    This endpoint returns detailed user information including profile data,
+    preferences, and account status.
+    
+    Args:
+        user_id: The unique identifier of the user to retrieve
+        
+    Returns:
+        User information including profile, preferences, and status
+    """
+    ...
+```
+
+Good descriptions should:
+- Clearly explain the purpose of the endpoint
+- Describe what the endpoint returns
+- Document any side effects
+- Provide context for when to use the endpoint
+
+These practices are especially important for MCP integration, as AI assistants rely on these descriptions and operation IDs to understand and use your API effectively.
+
 ## Pull Requests
 
 ### Creating a Pull Request

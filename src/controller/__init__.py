@@ -56,5 +56,14 @@ def configure_routes(app: FastAPI, settings: ConfigurationManager) -> FastAPI:
     for controller_class in controller_classes:
         controller = controller_class(settings=settings)
         controller.register_routes(app, url_prefix=url_prefix)
+    
+    # After all routes have been registered, set up the MCP server if available
+    try:
+        # Import here to avoid circular imports
+        from src.controller.blueprint.mcp_controller import MCPController
+        MCPController.setup_server()
+    except (ImportError, AttributeError):
+        # MCP controller might not be available or setup_server method not found
+        pass
 
     return app

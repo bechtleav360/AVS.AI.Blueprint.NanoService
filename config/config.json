@@ -5,6 +5,7 @@
     "app_environment": "development",
     "app_port": 5000,
     "app_url_prefix": "",
+    "app_mcp": true,
     "log_level": "DEBUG",
     "log_file": "app.log"
 }

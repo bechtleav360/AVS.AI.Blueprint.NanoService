@@ -68,6 +68,7 @@ class EchoController(BaseController):
         app.add_api_route(
             path=f"{url_prefix}/echo",
             endpoint=self.echo,
+            operation_id="echo_request_message",
             methods=["POST"],
             response_model=EchoResponse,
             summary="Echo Endpoint",
