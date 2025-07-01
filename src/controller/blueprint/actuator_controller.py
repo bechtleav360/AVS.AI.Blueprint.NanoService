@@ -32,9 +32,65 @@ class ActuatorController(BaseController):
 
 
     async def get_info(self) -> InfoResponse:
-        """Returns info dictionary"""
-
-        return InfoResponse(info=self.info)
+        """Returns info dictionary with hierarchical environment variables
+        
+        Builds a hierarchical JSON structure with the following structure:
+        - info
+          - app
+            - name
+            - description
+            - ...
+          - logs
+            - level
+            - ...
+          - build
+            - commit
+            - ...
+        """
+        # Create the hierarchical structure
+        info_dict = {
+            "app": {},
+            "logs": {},
+            "build": {}
+        }
+        
+        # Process app variables
+        for key in dir(ConfigParameter):
+            if key.startswith('APP_') and not key.startswith('__'):
+                try:
+                    param = getattr(ConfigParameter, key)
+                    value = self.settings.get_config(param)
+                    # Remove APP_ prefix and convert to lowercase
+                    clean_key = key[4:].lower()
+                    info_dict["app"][clean_key] = value
+                except Exception:
+                    pass
+        
+        # Process log variables
+        for key in dir(ConfigParameter):
+            if key.startswith('LOG_') and not key.startswith('__'):
+                try:
+                    param = getattr(ConfigParameter, key)
+                    value = self.settings.get_config(param)
+                    # Remove LOG_ prefix and convert to lowercase
+                    clean_key = key[4:].lower()
+                    info_dict["logs"][clean_key] = value
+                except Exception:
+                    pass
+        
+        # Process build variables
+        for key in dir(ConfigParameter):
+            if key.startswith('BUILD_') and not key.startswith('__'):
+                try:
+                    param = getattr(ConfigParameter, key)
+                    value = self.settings.get_config(param)
+                    # Remove BUILD_ prefix and convert to lowercase
+                    clean_key = key[6:].lower()
+                    info_dict["build"][clean_key] = value
+                except Exception:
+                    pass
+        
+        return InfoResponse(info=info_dict)
 
     async def get_logs(self, log_length: int = 100) -> LogsResponse:
         """Return the last log entries as text
