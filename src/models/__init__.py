@@ -7,7 +7,7 @@ throughout the application.
 # Import models here as they are created
 # Example:
 # from .user import User, UserCreate, UserResponse
-from .errors import (
+from src.models.blueprint.errors import (
     BadRequestError,
     BaseAPIError,
     ClientError,

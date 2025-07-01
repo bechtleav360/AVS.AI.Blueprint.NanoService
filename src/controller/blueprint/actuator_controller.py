@@ -5,12 +5,12 @@ from prometheus_client import make_asgi_app
 
 from src.config.config import ConfigurationManager
 from src.config.params import ConfigParameter
-from src.controller.base_controller import BaseController
+from src.controller.blueprint import BaseController
 from src.controller.dto.actuator import (
     HealthResponse,
     InfoResponse,
     LogsResponse,
-    StatusResponse,
+    ReadinessResponse,
 )
 
 
@@ -20,7 +20,6 @@ class ActuatorController(BaseController):
     def __init__(self, settings: ConfigurationManager) -> None:
         self.settings = settings
         self.health: bool = True
-        self.status: str = "OK"
         self.info: dict = {}
         self.logs: list = []
         self.logger = logging.getLogger("api.actuators")
@@ -30,29 +29,30 @@ class ActuatorController(BaseController):
 
         return HealthResponse(health=self.health)
 
-    async def get_status(self) -> StatusResponse:
-        """Returns current status"""
 
-        return StatusResponse(status=self.status)
 
     async def get_info(self) -> InfoResponse:
         """Returns info dictionary"""
 
         return InfoResponse(info=self.info)
 
-    async def get_logs(self) -> LogsResponse:
-        """Return the last 300 log entries as text"""
+    async def get_logs(self, log_length: int = 100) -> LogsResponse:
+        """Return the last log entries as text
+        
+        Args:
+            log_length: Number of log lines to return (default: 100)
+        """
 
         try:
             log_file = self.settings.get_config("log_file")
             with open(log_file, "r", encoding="utf-8") as f:
                 log_lines = f.readlines()
 
-            # Filter the last 300 lines, then reverse them
-            last_300_logs = log_lines[-300:][::-1]
+            # Filter the last log_length lines, then reverse them
+            last_logs = log_lines[-log_length:][::-1] if log_length > 0 else []
 
             processed_logs = []
-            for line in last_300_logs:
+            for line in last_logs:
                 if "Starting flask app" in line:
                     processed_logs.append("\nRESTART\n\n")
                 processed_logs.append(line.rstrip())
@@ -61,6 +61,17 @@ class ActuatorController(BaseController):
         except Exception as e:
             self.logger.error(f"Error retrieving logs: {e}")
             raise HTTPException(status_code=500, detail="Could not read logs.")
+            
+    async def check_readiness(self) -> ReadinessResponse:
+        """Kubernetes readiness probe endpoint"""
+        
+        # Check if configuration is valid using the is_valid() method
+        if self.settings.is_valid():
+            return ReadinessResponse(ready=True, reason="")
+        else:
+            reason = self.settings.get_reason()
+            # Return HTTP 500 when not ready
+            raise HTTPException(status_code=500, detail=reason)
 
     def register_routes(self, app: FastAPI, url_prefix: str = ""):
         """Register actuator endpoints with a FastAPI app"""
@@ -75,15 +86,7 @@ class ActuatorController(BaseController):
             tags=["actuators"],
         )
 
-        app.add_api_route(
-            path=f"{url_prefix}/status",
-            endpoint=self.get_status,
-            methods=["GET"],
-            response_model=StatusResponse,
-            summary="Service Status",
-            description="Returns the current status of the service",
-            tags=["actuators"],
-        )
+
 
         app.add_api_route(
             path=f"{url_prefix}/info",
@@ -101,7 +104,17 @@ class ActuatorController(BaseController):
             methods=["GET"],
             response_model=LogsResponse,
             summary="Service Logs",
-            description="Returns the last 300 log entries as structured data",
+            description="Returns log entries as structured data with configurable length",
+            tags=["actuators"],
+        )
+        
+        app.add_api_route(
+            path=f"{url_prefix}/ready",
+            endpoint=self.check_readiness,
+            methods=["GET"],
+            response_model=ReadinessResponse,
+            summary="Kubernetes Readiness Probe",
+            description="Kubernetes readiness probe endpoint that returns true when the service is ready",
             tags=["actuators"],
         )
 

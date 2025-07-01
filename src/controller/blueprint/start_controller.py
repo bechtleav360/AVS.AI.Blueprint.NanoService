@@ -5,7 +5,7 @@ from fastapi.routing import APIRoute, Mount
 from starlette.responses import HTMLResponse
 
 from src.config.config import ConfigurationManager
-from src.controller.base_controller import BaseController
+from src.controller.blueprint import BaseController
 
 
 class StartController(BaseController):

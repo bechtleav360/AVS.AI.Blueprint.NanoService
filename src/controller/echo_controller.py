@@ -4,7 +4,7 @@ from typing import Any, Dict
 from fastapi import FastAPI, HTTPException
 
 from src.config import ConfigurationManager
-from src.controller import BaseController
+from src.controller.blueprint import BaseController
 from src.controller.dto.echo import EchoRequest, EchoResponse
 from src.models import BaseAPIError
 from src.services.echo_service import EchoService
@@ -24,27 +24,7 @@ class EchoController(BaseController):
         self.logger = logging.getLogger("api.echo")
         self.service = EchoService()
 
-    def _request_to_domain(self, request: EchoRequest) -> Dict[str, Any]:
-        """Convert an EchoRequest DTO to domain model format.
 
-        Args:
-            request: The incoming request DTO
-
-        Returns:
-            Dict containing the domain data
-        """
-        return request.to_domain()
-
-    def _domain_to_response(self, domain_obj: Any) -> EchoResponse:
-        """Convert a domain model to an EchoResponse DTO.
-
-        Args:
-            domain_obj: The domain model to convert
-
-        Returns:
-            EchoResponse: The API response DTO
-        """
-        return EchoResponse.from_domain(domain_obj)
 
     async def echo(self, echo_input: EchoRequest) -> EchoResponse:
         """Handle an echo request.

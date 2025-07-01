@@ -5,7 +5,7 @@ from typing import List, Type
 from fastapi import FastAPI
 
 from src.config import ConfigParameter, ConfigurationManager
-from src.controller.base_controller import BaseController
+from src.controller.blueprint import BaseController
 
 # READ BEVOR CHANGING
 # This file automatically imports all subclasses of BaseController and executes the "register_routes" method.
