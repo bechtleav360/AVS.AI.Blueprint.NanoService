@@ -105,16 +105,12 @@ class ConfigurationManager:
 
             # Configure file handler
             file_handler = logging.FileHandler(log_file)
-            file_handler.setFormatter(
-                logging.Formatter(log_message_format, datefmt=log_date_format)
-            )
+            file_handler.setFormatter(logging.Formatter(log_message_format, datefmt=log_date_format))
             self._log_handlers.append(file_handler)
 
             # Configure console handler
             console_handler = logging.StreamHandler()
-            console_handler.setFormatter(
-                logging.Formatter(log_message_format, datefmt=log_date_format)
-            )
+            console_handler.setFormatter(logging.Formatter(log_message_format, datefmt=log_date_format))
             self._log_handlers.append(console_handler)
 
             # Get logger names to configure
@@ -126,11 +122,11 @@ class ConfigurationManager:
             # Configure root logger with handlers and set level to WARNING to avoid double logging
             root_logger = logging.getLogger()
             root_logger.setLevel(logging.WARNING)  # Default to WARNING for root
-            
+
             # Remove any existing handlers from root logger
             for handler in root_logger.handlers[:]:
                 root_logger.removeHandler(handler)
-            
+
             # Add our handlers to root logger
             for handler in self._log_handlers:
                 root_logger.addHandler(handler)
@@ -139,11 +135,7 @@ class ConfigurationManager:
             for logger_name in loggers:
                 try:
                     logger = logging.getLogger(logger_name)
-                    logger.setLevel(
-                        self.get_config(
-                            ConfigParameter.LOG_LOGGER_LEVEL, log_level
-                        ).upper()
-                    )
+                    logger.setLevel(self.get_config(ConfigParameter.LOG_LOGGER_LEVEL, log_level).upper())
                     # Disable propagation to prevent duplicate logs
                     logger.propagate = False
                     # Clear any existing handlers
@@ -152,7 +144,7 @@ class ConfigurationManager:
                 except Exception as e:
                     print(f"Failed to configure logger '{logger_name}': {e}")
                     continue
-                
+
                 # Add our handlers to this logger
                 for handler in self._log_handlers:
                     logger.addHandler(handler)

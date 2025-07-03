@@ -95,9 +95,7 @@ def run_production(host: str = "0.0.0.0", port: Optional[int] = None) -> None:
 
     workers = multiprocessing.cpu_count() * 2 + 1
 
-    logger.info(
-        f"Starting production server with {workers} workers on http://{host}:{port}"
-    )
+    logger.info(f"Starting production server with {workers} workers on http://{host}:{port}")
 
     uvicorn.run(
         "src.app:app",
@@ -110,9 +108,7 @@ def run_production(host: str = "0.0.0.0", port: Optional[int] = None) -> None:
 
 if __name__ == "__main__":
     # Determine which mode to run in based on configuration
-    environment = settings.get_config(
-        ConfigParameter.APP_ENVIRONMENT, "development"
-    ).lower()
+    environment = settings.get_config(ConfigParameter.APP_ENVIRONMENT, "development").lower()
 
     if environment == "production":
         run_production()

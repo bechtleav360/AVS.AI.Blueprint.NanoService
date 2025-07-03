@@ -5,7 +5,7 @@ from typing import List, Type
 from fastapi import FastAPI
 
 from src.config import ConfigParameter, ConfigurationManager
-from src.controller.base_controller import BaseController
+from src.controller.blueprint import BaseController
 
 # READ BEVOR CHANGING
 # This file automatically imports all subclasses of BaseController and executes the "register_routes" method.
@@ -17,9 +17,7 @@ def _import_submodules(package_name: str):
 
     package = importlib.import_module(package_name)
 
-    for _, name, is_pkg in pkgutil.iter_modules(
-        package.__path__, package.__name__ + "."
-    ):
+    for _, name, is_pkg in pkgutil.iter_modules(package.__path__, package.__name__ + "."):
         importlib.import_module(name)
         if is_pkg:
             _import_submodules(name)
@@ -56,5 +54,15 @@ def configure_routes(app: FastAPI, settings: ConfigurationManager) -> FastAPI:
     for controller_class in controller_classes:
         controller = controller_class(settings=settings)
         controller.register_routes(app, url_prefix=url_prefix)
+
+    # After all routes have been registered, set up the MCP server if available
+    try:
+        # Import here to avoid circular imports
+        from src.controller.blueprint.mcp_controller import MCPController
+
+        MCPController.setup_server()
+    except (ImportError, AttributeError):
+        # MCP controller might not be available or setup_server method not found
+        pass
 
     return app

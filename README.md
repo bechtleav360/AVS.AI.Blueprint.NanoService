@@ -132,7 +132,7 @@ The configuration layer manages application settings.
    # source .venv/bin/activate  # On Unix/macOS
    
    # Install dependencies
-   uv pip install -r requirements.txt  # or use pip
+   uv pip install -e .  # or use pip install -e .
    ```
 
 3. Configure environment variables:
@@ -182,6 +182,7 @@ Access configuration through the `ConfigurationManager`:
 
 ```python
 from src.config import ConfigurationManager
+# or from idac.configurations if use our external libraries
 
 settings = ConfigurationManager()
 db_url = settings.get_config("database_url")
@@ -201,6 +202,28 @@ FastAPI automatically generates interactive API documentation:
 
 - Swagger UI: `/docs`
 - ReDoc: `/redoc`
+
+## Model Context Protocol (MCP) Support
+
+This service includes support for the Model Context Protocol (MCP), which enables AI assistants to interact with the API programmatically. MCP allows AI models to discover and use your API's capabilities without hard-coding.
+
+### MCP Features
+
+- **Automatic Route Discovery**: AI assistants can discover available endpoints
+- **Operation Descriptions**: Detailed descriptions help AI understand endpoint purposes
+- **Parameter Documentation**: Clear parameter documentation ensures correct usage
+- **Configurable**: MCP support can be enabled/disabled via the `app_mcp` configuration setting
+
+### Excluded Routes
+
+By default, the following route categories are excluded from MCP:
+
+- `actuators`: Health checks and system information
+- `info`: Internal system information
+
+### Configuration
+
+MCP support can be enabled or disabled through the `app_mcp` configuration setting in `config.json` or via environment variables:
 
 ## Logging
 

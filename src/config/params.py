@@ -8,6 +8,7 @@ class ConfigParameter(Enum):
     APP_VERSION = "app_version"
     APP_ENVIRONMENT = "app_environment"
     APP_URL_PREFIX = "app_url_prefix"
+    APP_MCP = "app_mcp"  # Flag to enable/disable MCP functionality
     LOG_LEVEL = "log_level"
     LOG_FILE = "log_file"
     LOG_LOGGER_NAMES = "log_logger_names"

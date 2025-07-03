@@ -17,5 +17,11 @@
         "source.fixAll": "explicit"
     },
     "files.autoSave": "onFocusChange",
-    "python.analysis.typeCheckingMode": "basic"
+    "python.analysis.typeCheckingMode": "basic",
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/.venv": false,
+        "**/uv.lock": true,
+        "**/*.egg-info": true
+    }
 }
