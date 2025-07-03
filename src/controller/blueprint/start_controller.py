@@ -26,9 +26,7 @@ class StartController(BaseController):
             if isinstance(route, APIRoute):
                 methods = [method for method in route.methods]
                 summary = f" - {route.summary}" if route.summary else ""
-                routes.append(
-                    f"{route.name or 'unnamed'}: {', '.join(methods)} {route.path}{summary}"
-                )
+                routes.append(f"{route.name or 'unnamed'}: {', '.join(methods)} {route.path}{summary}")
             elif isinstance(route, Mount):
                 routes.append(f"MOUNT: {route.path} → {route.name}")
             else:

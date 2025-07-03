@@ -1,5 +1,4 @@
 import logging
-from typing import Any, Dict
 
 from fastapi import FastAPI, HTTPException
 
@@ -23,8 +22,6 @@ class EchoController(BaseController):
         super().__init__(settings)
         self.logger = logging.getLogger("api.echo")
         self.service = EchoService()
-
-
 
     async def echo(self, echo_input: EchoRequest) -> EchoResponse:
         """Handle an echo request.

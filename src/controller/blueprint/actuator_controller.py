@@ -29,11 +29,9 @@ class ActuatorController(BaseController):
 
         return HealthResponse(health=self.health)
 
-
-
     async def get_info(self) -> InfoResponse:
         """Returns info dictionary with hierarchical environment variables
-        
+
         Builds a hierarchical JSON structure with the following structure:
         - info
           - app
@@ -48,15 +46,11 @@ class ActuatorController(BaseController):
             - ...
         """
         # Create the hierarchical structure
-        info_dict = {
-            "app": {},
-            "logs": {},
-            "build": {}
-        }
-        
+        info_dict = {"app": {}, "logs": {}, "build": {}}
+
         # Process app variables
         for key in dir(ConfigParameter):
-            if key.startswith('APP_') and not key.startswith('__'):
+            if key.startswith("APP_") and not key.startswith("__"):
                 try:
                     param = getattr(ConfigParameter, key)
                     value = self.settings.get_config(param)
@@ -65,10 +59,10 @@ class ActuatorController(BaseController):
                     info_dict["app"][clean_key] = value
                 except Exception:
                     pass
-        
+
         # Process log variables
         for key in dir(ConfigParameter):
-            if key.startswith('LOG_') and not key.startswith('__'):
+            if key.startswith("LOG_") and not key.startswith("__"):
                 try:
                     param = getattr(ConfigParameter, key)
                     value = self.settings.get_config(param)
@@ -77,10 +71,10 @@ class ActuatorController(BaseController):
                     info_dict["logs"][clean_key] = value
                 except Exception:
                     pass
-        
+
         # Process build variables
         for key in dir(ConfigParameter):
-            if key.startswith('BUILD_') and not key.startswith('__'):
+            if key.startswith("BUILD_") and not key.startswith("__"):
                 try:
                     param = getattr(ConfigParameter, key)
                     value = self.settings.get_config(param)
@@ -89,12 +83,12 @@ class ActuatorController(BaseController):
                     info_dict["build"][clean_key] = value
                 except Exception:
                     pass
-        
+
         return InfoResponse(info=info_dict)
 
     async def get_logs(self, log_length: int = 100) -> LogsResponse:
         """Return the last log entries as text
-        
+
         Args:
             log_length: Number of log lines to return (default: 100)
         """
@@ -117,10 +111,10 @@ class ActuatorController(BaseController):
         except Exception as e:
             self.logger.error(f"Error retrieving logs: {e}")
             raise HTTPException(status_code=500, detail="Could not read logs.")
-            
+
     async def check_readiness(self) -> ReadinessResponse:
         """Kubernetes readiness probe endpoint"""
-        
+
         # Check if configuration is valid using the is_valid() method
         if self.settings.is_valid():
             return ReadinessResponse(ready=True, reason="")
@@ -142,8 +136,6 @@ class ActuatorController(BaseController):
             tags=["actuators"],
         )
 
-
-
         app.add_api_route(
             path=f"{url_prefix}/info",
             endpoint=self.get_info,
@@ -163,7 +155,7 @@ class ActuatorController(BaseController):
             description="Returns log entries as structured data with configurable length",
             tags=["actuators"],
         )
-        
+
         app.add_api_route(
             path=f"{url_prefix}/ready",
             endpoint=self.check_readiness,

@@ -11,10 +11,11 @@ from src.controller.blueprint import BaseController
 
 class MCPController(BaseController):
     """Controller for Model Context Protocol (MCP) integration
-    
+
     This controller integrates the FastAPI MCP library to enable AI assistants
     to interact with the API.
     """
+
     # Class variable to store the MCP instance
     _mcp_instance = None
 
@@ -31,20 +32,16 @@ class MCPController(BaseController):
         """
         # Check if MCP is enabled in configuration
         mcp_enabled = self.settings.get_config(ConfigParameter.APP_MCP, False)
-        
+
         if not mcp_enabled:
             self.logger.info("MCP is disabled in configuration, skipping registration")
             return
-            
+
         self.logger.info("Registering MCP routes")
-        
+
         # Create MCP instance and store it as a class variable
-        MCPController._mcp_instance = FastApiMCP(
-            app, 
-            url_prefix, 
-            exclude_tags=["actuators", "info"]
-        )
-        
+        MCPController._mcp_instance = FastApiMCP(app, url_prefix, exclude_tags=["actuators", "info"])
+
         # Mount the MCP routes
         MCPController._mcp_instance.mount()
 

@@ -132,7 +132,7 @@ The configuration layer manages application settings.
    # source .venv/bin/activate  # On Unix/macOS
    
    # Install dependencies
-   uv pip install -r requirements.txt  # or use pip
+   uv pip install -e .  # or use pip install -e .
    ```
 
 3. Configure environment variables:
@@ -182,6 +182,7 @@ Access configuration through the `ConfigurationManager`:
 
 ```python
 from src.config import ConfigurationManager
+# or from idac.configurations if use our external libraries
 
 settings = ConfigurationManager()
 db_url = settings.get_config("database_url")

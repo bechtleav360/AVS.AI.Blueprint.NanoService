@@ -21,14 +21,10 @@ class EchoRequest(BaseRequestDTO[Dict[str, Any]]):
     """
 
     # This field can accept any JSON-serializable data
-    data: Dict[str, Any] = Field(
-        default_factory=dict, description="Any JSON data to be echoed back"
-    )
+    data: Dict[str, Any] = Field(default_factory=dict, description="Any JSON data to be echoed back")
 
     # Optional metadata about the request
-    metadata: Optional[Dict[str, Any]] = Field(
-        default=None, description="Optional metadata about the request"
-    )
+    metadata: Optional[Dict[str, Any]] = Field(default=None, description="Optional metadata about the request")
 
     def to_domain(self) -> Dict[str, Any]:
         """Convert this DTO to domain model format.
@@ -47,25 +43,17 @@ class EchoResponse(BaseResponseDTO[Dict[str, Any]]):
     """
 
     # Echo back the input data
-    input_data: Dict[str, Any] = Field(
-        description="The original input data that was received"
-    )
+    input_data: Dict[str, Any] = Field(description="The original input data that was received")
 
     # Add processing metadata
-    processed: bool = Field(
-        default=True, description="Indicates if the request was processed successfully"
-    )
+    processed: bool = Field(default=True, description="Indicates if the request was processed successfully")
 
-    processed_timestamp: str = Field(
-        description="Timestamp when the request was processed"
-    )
+    processed_timestamp: str = Field(description="Timestamp when the request was processed")
 
     up_timestamp: str = Field(description="Timestamp when the service was started")
 
     @classmethod
-    def from_domain(
-        cls, domain_obj: Union[Dict[str, Any], EchoMessage]
-    ) -> "EchoResponse":
+    def from_domain(cls, domain_obj: Union[Dict[str, Any], EchoMessage]) -> "EchoResponse":
         """Create an EchoResponse from a domain model object.
 
         Args:
@@ -86,10 +74,6 @@ class EchoResponse(BaseResponseDTO[Dict[str, Any]]):
             return cls(
                 input_data=domain_obj["data"],
                 processed=domain_obj.get("is_processed", True),
-                processed_timestamp=domain_obj.get(
-                    "processed_timestamp", datetime.utcnow().isoformat()
-                ),
-                up_timestamp=domain_obj.get(
-                    "service_start_time", datetime.utcnow().isoformat()
-                ),
+                processed_timestamp=domain_obj.get("processed_timestamp", datetime.utcnow().isoformat()),
+                up_timestamp=domain_obj.get("service_start_time", datetime.utcnow().isoformat()),
             )

@@ -25,7 +25,5 @@ class EchoMessage:
             "is_processed": self.is_processed,
             "processed_timestamp": self.processed_timestamp.isoformat(),
             "service_start_time": self.service_start_time.isoformat(),
-            "processing_info": (
-                {"message": "Echo successful"} if self.is_processed else {}
-            ),
+            "processing_info": ({"message": "Echo successful"} if self.is_processed else {}),
         }

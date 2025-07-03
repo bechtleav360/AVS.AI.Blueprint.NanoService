@@ -56,9 +56,7 @@ class BaseResponseDTO(BaseModel, ABC, Generic[D]):
         raise NotImplementedError("Subclasses must implement from_domain")
 
     @classmethod
-    def from_domain_optional(
-        cls: Type["BaseResponseDTO"], domain_obj: Optional[D]
-    ) -> Optional["BaseResponseDTO"]:
+    def from_domain_optional(cls: Type["BaseResponseDTO"], domain_obj: Optional[D]) -> Optional["BaseResponseDTO"]:
         """Safely create a response DTO from an optional domain object.
 
         This is a convenience method that handles the case where the domain object
@@ -75,9 +73,7 @@ class BaseResponseDTO(BaseModel, ABC, Generic[D]):
         return cls.from_domain(domain_obj)
 
     @classmethod
-    def from_domain_list(
-        cls: Type["BaseResponseDTO"], domain_objs: list[D]
-    ) -> list["BaseResponseDTO"]:
+    def from_domain_list(cls: Type["BaseResponseDTO"], domain_objs: list[D]) -> list["BaseResponseDTO"]:
         """Convert a list of domain objects to a list of response DTOs.
 
         This is a convenience method that converts a list of domain objects
@@ -92,9 +88,7 @@ class BaseResponseDTO(BaseModel, ABC, Generic[D]):
         return [cls.from_domain(obj) for obj in domain_objs]
 
     @classmethod
-    def from_domain_dict(
-        cls: Type["BaseResponseDTO"], domain_objs: Dict[Any, D]
-    ) -> Dict[Any, "BaseResponseDTO"]:
+    def from_domain_dict(cls: Type["BaseResponseDTO"], domain_objs: Dict[Any, D]) -> Dict[Any, "BaseResponseDTO"]:
         """Convert a dictionary of domain objects to a dictionary of response DTOs.
 
         This is a convenience method that converts a dictionary of domain objects

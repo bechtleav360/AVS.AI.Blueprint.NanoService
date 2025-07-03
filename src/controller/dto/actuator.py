@@ -13,9 +13,7 @@ class StatusResponse(BaseModel):
 
 
 class InfoResponse(BaseModel):
-    info: Dict[str, Any] = Field(
-        description="Service information and metadata", default_factory=dict
-    )
+    info: Dict[str, Any] = Field(description="Service information and metadata", default_factory=dict)
 
 
 class LogsResponse(BaseModel):
