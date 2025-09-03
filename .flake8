@@ -1,2 +1,9 @@
 [flake8]
-max-line-length = 120
+max-line-length = 140
+# required for compatibility with Black:
+extend-ignore = E203
+exclude = .venv
+# Import configuration
+application-import-names = src
+import-order-style = pep8
+# Enable the following plugins

@@ -1,3 +1,5 @@
+"""Actuator controller endpoints and route registration."""
+
 import logging
 
 from fastapi import FastAPI, HTTPException
@@ -18,7 +20,7 @@ class ActuatorController(BaseController):
     """Actuator controller for health checks, status, info, and logs"""
 
     def __init__(self, settings: ConfigurationManager) -> None:
-        self.settings = settings
+        super().__init__(settings)
         self.health: bool = True
         self.info: dict = {}
         self.logs: list = []
@@ -48,41 +50,18 @@ class ActuatorController(BaseController):
         # Create the hierarchical structure
         info_dict = {"app": {}, "logs": {}, "build": {}}
 
-        # Process app variables
-        for key in dir(ConfigParameter):
-            if key.startswith("APP_") and not key.startswith("__"):
-                try:
-                    param = getattr(ConfigParameter, key)
-                    value = self.settings.get_config(param)
-                    # Remove APP_ prefix and convert to lowercase
-                    clean_key = key[4:].lower()
-                    info_dict["app"][clean_key] = value
-                except Exception:
-                    pass
-
-        # Process log variables
-        for key in dir(ConfigParameter):
-            if key.startswith("LOG_") and not key.startswith("__"):
-                try:
-                    param = getattr(ConfigParameter, key)
-                    value = self.settings.get_config(param)
-                    # Remove LOG_ prefix and convert to lowercase
-                    clean_key = key[4:].lower()
-                    info_dict["logs"][clean_key] = value
-                except Exception:
-                    pass
-
-        # Process build variables
-        for key in dir(ConfigParameter):
-            if key.startswith("BUILD_") and not key.startswith("__"):
-                try:
-                    param = getattr(ConfigParameter, key)
-                    value = self.settings.get_config(param)
-                    # Remove BUILD_ prefix and convert to lowercase
-                    clean_key = key[6:].lower()
-                    info_dict["build"][clean_key] = value
-                except Exception:
-                    pass
+        # Iterate over defined configuration parameters and categorize by prefix
+        for param in ConfigParameter:
+            name = param.name
+            if name.startswith("APP_"):
+                clean_key = name[4:].lower()
+                info_dict["app"][clean_key] = self.settings.get_config(param)
+            elif name.startswith("LOG_"):
+                clean_key = name[4:].lower()
+                info_dict["logs"][clean_key] = self.settings.get_config(param)
+            elif name.startswith("BUILD_"):
+                clean_key = name[6:].lower()
+                info_dict["build"][clean_key] = self.settings.get_config(param)
 
         return InfoResponse(info=info_dict)
 
@@ -94,7 +73,7 @@ class ActuatorController(BaseController):
         """
 
         try:
-            log_file = self.settings.get_config("log_file")
+            log_file = self.settings.get_config(ConfigParameter.LOG_FILE)
             with open(log_file, "r", encoding="utf-8") as f:
                 log_lines = f.readlines()
 
@@ -108,9 +87,9 @@ class ActuatorController(BaseController):
                 processed_logs.append(line.rstrip())
 
             return LogsResponse(logs=processed_logs)
-        except Exception as e:
-            self.logger.error(f"Error retrieving logs: {e}")
-            raise HTTPException(status_code=500, detail="Could not read logs.")
+        except (RuntimeError, FileNotFoundError, OSError) as e:
+            self.logger.error("Error retrieving logs: %s", e)
+            raise HTTPException(status_code=500, detail="Could not read logs.") from e
 
     async def check_readiness(self) -> ReadinessResponse:
         """Kubernetes readiness probe endpoint"""
@@ -162,7 +141,7 @@ class ActuatorController(BaseController):
             methods=["GET"],
             response_model=ReadinessResponse,
             summary="Kubernetes Readiness Probe",
-            description="Kubernetes readiness probe endpoint that returns true when the service is ready",
+            description="Readiness probe endpoint; returns true when the service is ready",
             tags=["actuators"],
         )
 
