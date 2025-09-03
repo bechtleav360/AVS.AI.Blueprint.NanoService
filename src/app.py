@@ -62,7 +62,7 @@ def run_development(host: str = "0.0.0.0", port: Optional[int] = None) -> None:
     if port is None:
         port = settings.get_config(ConfigParameter.APP_PORT)
 
-    logger.info(f"Starting development server on http://{host}:{port}")
+    logger.info("Starting development server on http://%s:%s", host, port)
     logger.info("Auto-reload enabled. Watching for file changes in 'src/'")
 
     uvicorn.run(
@@ -95,7 +95,7 @@ def run_production(host: str = "0.0.0.0", port: Optional[int] = None) -> None:
 
     workers = multiprocessing.cpu_count() * 2 + 1
 
-    logger.info(f"Starting production server with {workers} workers on http://{host}:{port}")
+    logger.info("Starting production server with %s workers on http://%s:%s", workers, host, port)
 
     uvicorn.run(
         "src.app:app",

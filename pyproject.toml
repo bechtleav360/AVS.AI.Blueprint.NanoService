@@ -3,7 +3,7 @@ requires = ["setuptools>=42", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "avs-ai-blueprint-nanoservice"
+name = "step-hitl"
 version = "0.0.1"
 description = "An app template for Python REST-API's"
 authors = [
@@ -18,7 +18,14 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
+    "fastapi>=0.115.11",
     "fastapi-mcp",
+    "dynaconf>=3.2.6,<4.0",
+    "prometheus_client>=0.21.0,<1.0",
+    "uvicorn>=0.23.2",
+    "idac_extractor>=0.2.1,<1.0",
+    "idac_configurations>=0.3.18,<1.0",
+    "idac_workspaces>=0.1.4,<1.0"    
 ]
 
 [project.optional-dependencies]

@@ -16,9 +16,7 @@ class ErrorDetail(BaseModel):
 
     code: str = Field(..., description="A machine-readable error code")
     message: str = Field(..., description="A human-readable error message")
-    details: Optional[Dict[str, Any]] = Field(
-        None, description="Additional error details"
-    )
+    details: Optional[Dict[str, Any]] = Field(None, description="Additional error details")
 
 
 class BaseAPIError(HTTPException):

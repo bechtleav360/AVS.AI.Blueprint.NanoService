@@ -9,10 +9,14 @@
             "args": [
                 "src.app:app",
                 "--reload",
-                "--reload-dir", "src",
-                "--host", "0.0.0.0",
-                "--port", "8000",
-                "--log-level", "debug"
+                "--reload-dir",
+                "src",
+                "--host",
+                "0.0.0.0",
+                "--port",
+                "8000",
+                "--log-level",
+                "debug"
             ],
             "jinja": true,
             "justMyCode": true,
@@ -27,10 +31,14 @@
             "module": "uvicorn",
             "args": [
                 "src.app:app",
-                "--host", "0.0.0.0",
-                "--port", "8000",
-                "--workers", "4",
-                "--log-level", "info"
+                "--host",
+                "0.0.0.0",
+                "--port",
+                "8000",
+                "--workers",
+                "4",
+                "--log-level",
+                "info"
             ],
             "jinja": true,
             "justMyCode": true,
@@ -63,7 +71,8 @@
             "module": "pytest",
             "args": [
                 "-v",
-                "-k", "${input:testName}",
+                "-k",
+                "${input:testName}",
                 "--cov=src",
                 "--cov-report=term-missing"
             ],

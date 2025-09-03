@@ -90,6 +90,27 @@ For a consistent development environment, you can use Docker:
 
 ### Local Development Setup
 
+#### Configure Private PyPI
+
+For accessing private packages from Azure DevOps:
+
+1. **Create a Personal Access Token** in Azure DevOps with Packages:Read scope
+
+2. **Use the token with uv**:
+   ```bash
+   export PYPI_PAT=your_pypi_pat
+   uv pip install -e ".[dev]" -i https://pypi.org/simple --extra-index-url https://azdo:$PYPI_PAT@pkgs.dev.azure.com/av360/_packaging/PyPi-Local/pypi/simple/
+   ```
+
+3. **Or add a pip configuration file**:
+   - Windows: `pip.ini` in your virtualenv
+   - Mac/Linux: `pip.conf` in your virtualenv
+   
+   ```ini
+   [global]
+   index-url=https://pkgs.dev.azure.com/av360/_packaging/PyPi-Local/pypi/simple/
+   ```
+
 #### Prerequisites
 
 Ensure you have the prerequisites installed, then follow these setup instructions:
@@ -113,20 +134,8 @@ Ensure you have the prerequisites installed, then follow these setup instruction
    # Install UV
    pip install uv
 
-   # Install dependencies
-   uv pip install -r requirements.txt
-   ```
-   
-   Or using pip:
-   ```bash
-   # Create and activate virtual environment
-   python -m venv .venv
-   .\.venv\Scripts\activate  # On Windows
-   # or
-   # source .venv/bin/activate  # On Unix/macOS
-   
-   # Install dependencies
-   pip install -r requirements.txt
+   # Install dependencies, including development tools
+   uv pip install -e ".[dev]"
    ```
 
 3. Install pre-commit hooks:
@@ -134,13 +143,7 @@ Ensure you have the prerequisites installed, then follow these setup instruction
    pre-commit install
    ```
 
-4. Install development dependencies (if any):
-   ```bash
-   # If you have a requirements-dev.txt
-   uv pip install -r requirements-dev.txt  # or use pip
-   ```
-
-5. Configure environment variables:
+4. Configure environment variables:
    ```bash
    copy .env.example .env  # On Windows
    # or

@@ -8,7 +8,7 @@ class HealthResponse(BaseModel):
     health: bool = Field(description="Indicates if the service is healthy")
 
 
-class StatusResponse(BaseModel):
+class ReadinessResponse(BaseModel):
     status: str = Field(description="Current status of the service")
 
 
