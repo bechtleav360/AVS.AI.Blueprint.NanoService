@@ -20,7 +20,9 @@ description: The generated code throws errors or catches exceptions
    - [ServiceUnavailableError](cci:2://file:///c:/Users/pajom/Git/avs/AVS.AI.Blueprint.NanoService/src/models/errors.py:137:0-142:52) (503): Service unavailable
 
 ## Error Response Format
+
 All errors must return:
+
 ```json
 {
   "code": "error_code",
@@ -29,11 +31,12 @@ All errors must return:
     "key": "Additional context"
   }
 }
-
+```
 
 ## Best Practices
-* Be specific with error types
-* Provide actionable error messages
-* Include relevant context in details
-* Log errors before converting to API errors
-* Document expected errors in API documentation (see documentation-standards.md)
+
+- Be specific with error types
+- Provide actionable error messages
+- Include relevant context in details
+- Log errors before converting to API errors
+- Document expected errors in API documentation (see documentation-standards.md)
